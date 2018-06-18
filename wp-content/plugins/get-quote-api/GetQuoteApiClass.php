@@ -2,7 +2,7 @@
 
 class GetQuoteApiClass
 {
-    const BASE_URL = "http://localhost/andy/viddyoze-laravel/public/";
+    const BASE_URL = "http://localhost/andy/viddyoze-laravel/public";
 
     public function quotes()
     {
@@ -72,12 +72,15 @@ class GetQuoteApiClass
     /**
      * Updates a quote
      */
-    public function update($json)
+    public function update($id, $json)
     {
         $url = GetQuoteApiClass::BASE_URL."/api/quotes/".$id;
 
         $request = wp_remote_request($url, [
             'method' => 'PUT',
+            'headers'  => [
+                'Content-Type' => 'application/x-www-form-urlencoded'
+            ],
             'body' => [
                 'json' => $json
             ]
@@ -92,11 +95,11 @@ class GetQuoteApiClass
 
     /**
      * Delete a quote
-     *
-     * @param $id
      */
-    public function delete($id)
+    public function delete()
     {
+        $id = $_GET['id'];
+
         $url = GetQuoteApiClass::BASE_URL."/api/quotes/".$id;
 
         $request = wp_remote_request($url, ['method' => 'DELETE']);
@@ -104,5 +107,7 @@ class GetQuoteApiClass
         if(is_wp_error($request)) {
             return false;
         }
+
+        wp_remote_retrieve_body($request);
     }
 }

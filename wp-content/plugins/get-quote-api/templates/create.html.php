@@ -15,7 +15,7 @@
             <h3>Please, fill in all fields</h3>
         </div>
         <div class="col-md-4">
-            <form action="<?php echo admin_url('admin.php?page=get-quote-api-create'); ?>" name="form" method="post">
+            <form action="<?php echo admin_url('admin.php?page=get-quote-api-create&noheader=true'); ?>" name="form" method="post">
                 <div class="form-group">
                     <input type="text" name="author" placeholder="Name" class="form-control">
                 </div>

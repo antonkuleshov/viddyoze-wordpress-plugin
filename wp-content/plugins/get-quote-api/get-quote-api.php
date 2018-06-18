@@ -31,6 +31,8 @@ require_once('GetQuoteApiClass.php');
 add_action('wp_footer', 'print_random_quote');
 add_action('admin_menu', 'quotes_admin_menu');
 
+$base_admin_url = admin_url('admin.php?page=get-quote-api-index');
+
 function print_random_quote() {
     $data = GetQuoteApiClass::quotes();
 
@@ -43,11 +45,11 @@ function print_random_quote() {
 
     $randQuoteId = array_rand($quotesIdArray);
 
-    $randQuote = GetQuoteApiClass::quote($randQuoteId);
+    $randQuote = GetQuoteApiClass::quote($quotesIdArray[$randQuoteId]);
 
-    dd($randQuote);
+    $quote = json_decode($randQuote, true);
 
-    echo "<blockquote><p>".$randQuote['data']['text']."</p></blockquote><hr><p>".$randQuote['data']['author']."</p>";
+    echo "<blockquote style='position: relative;z-index: 100;'><p>".$quote['data']['text']."</p><hr><p>".$quote['data']['author']."</p></blockquote>";
 }
 
 function quotes_admin_menu() {
@@ -87,7 +89,7 @@ function quotes_admin_menu() {
         '',
         'manage_options',
         'get-quote-api-update',
-        'quote_create'
+        'quote_update'
     );
 
     add_submenu_page(null,
@@ -121,16 +123,18 @@ function quote_create_form(){
 }
 
 function quote_create(){
+
+    global $base_admin_url;
+
     if('POST' == $_SERVER['REQUEST_METHOD']) {
 
-        $data = ['data' => ['author' => $_POST['author'], 'text' => $_POST['text']]];
+        $data = ['author' => $_POST['author'], 'text' => $_POST['text']];
         $json = json_encode($data);
 
-        //GetQuoteApiClass::create($json);
-
-        wp_redirect(admin_url('admin.php?page=quotes_admin_page'));
-        exit;
+        GetQuoteApiClass::create($json);
     }
+
+    header('Location: '.$base_admin_url, true, 301);
 }
 
 function quote_edit(){
@@ -148,28 +152,36 @@ function quote_edit(){
 }
 
 function quote_update(){
+
+    global $base_admin_url;
+
+    $id = $_GET['id'];
+
     if('POST' == $_SERVER['REQUEST_METHOD']) {
 
-        $data = ['data' => ['author' => $_POST['author'], 'text' => $_POST['text']]];
+        $data = ['author' => $_POST['author'], 'text' => $_POST['text']];
+
         $json = json_encode($data);
 
-        GetQuoteApiClass::update($json);
-
-        wp_redirect(admin_url('admin.php?page=quotes_admin_page'));
-        exit;
+        GetQuoteApiClass::update($id, $json);
     }
+
+    header('Location: '.$base_admin_url, true, 301);
 }
 
 function quote_delete() {
+
+    global $base_admin_url;
+
     add_query_arg([
         'id' => 'id',
-        'page'=>'delete_quote_api'
+        'page'=>'delete_quote_api',
+        'noheader' => true,
     ], admin_url('admin.php'));
 
     GetQuoteApiClass::delete();
 
-    wp_redirect('quotes_admin_page');
-    exit;
+    header('Location: '.$base_admin_url, true, 301);
 }
 
 
