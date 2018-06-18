@@ -2,7 +2,7 @@
 
 class GetQuoteApiClass
 {
-    const BASE_URL = "http://localhost/andy/viddyoze-laravel/public";
+    const BASE_URL = "http://18.209.4.126/viddyoze-laravel";
 
     public function quotes()
     {
@@ -14,7 +14,7 @@ class GetQuoteApiClass
             $author = $_GET['author'];
         }
 
-        $url = GetQuoteApiClass::BASE_URL."/api/quotes?page=".$page."& totalItems=".$totalItems."&itemsPerPage=".$itemsPerPage.((isset($author)) ? "&author=".$author : null);
+        $url = GetQuoteApiClass::BASE_URL."/api/quotes?page=".$page."&totalItems=".$totalItems."&itemsPerPage=".$itemsPerPage.((isset($author)) ? "&author=".$author : null);
 
         $request = wp_remote_get($url);
 
